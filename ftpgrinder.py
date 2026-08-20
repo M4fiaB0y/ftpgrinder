@@ -51,9 +51,6 @@ except ImportError:
     os.system(f"{sys.executable} -m pip install tqdm -q")
     from tqdm import tqdm
 
-# ─────────────────────────────────────────────
-#  Config
-# ─────────────────────────────────────────────
 console = Console()
 
 DEFAULT_PORT    = 21
@@ -90,9 +87,6 @@ BLACKLISTED_DOMAINS = {
     'hostgator.com','siteground.com','cloudfront.net','s3.amazonaws.com',
 }
 
-# ─────────────────────────────────────────────
-#  ASCII Banner
-# ─────────────────────────────────────────────
 BANNER = """
 [bold cyan]
  ███████╗████████╗██████╗     ██████╗ ██╗      █████╗ ██████╗ ███████╗
@@ -103,9 +97,6 @@ BANNER = """
  ╚═╝        ╚═╝   ╚═╝         ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝
 [/bold cyan]"""
 
-# ─────────────────────────────────────────────
-#  Helpers
-# ─────────────────────────────────────────────
 def ts():
     return datetime.now().strftime("%H:%M:%S")
 
@@ -136,9 +127,6 @@ def warn(msg):     console.print(f"  [bold yellow]⚠[/bold yellow]  {msg}")
 def error(msg):    console.print(f"  [bold red]✘[/bold red]  {msg}")
 def info(msg):     console.print(f"  [cyan]»[/cyan]  {msg}")
 
-# ─────────────────────────────────────────────
-#  Core logic (unchanged, just cleaner)
-# ─────────────────────────────────────────────
 def is_host_reachable(host, port=DEFAULT_PORT, timeout=DEFAULT_TIMEOUT):
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -201,9 +189,6 @@ def ftp_check_worker(combo, timeout=DEFAULT_TIMEOUT):
     except Exception:
         return None
 
-# ─────────────────────────────────────────────
-#  Feature: Clean combos
-# ─────────────────────────────────────────────
 def clean_combos():
     section("COMBO CLEANER")
 
@@ -244,8 +229,7 @@ def clean_combos():
                 skipped.append((line.rstrip('\n'), err))
                 skip_reasons[err] = skip_reasons.get(err, 0) + 1
             progress.advance(task)
-
-    # Deduplicate
+            
     seen, deduped = set(), []
     for c in cleaned:
         if c not in seen:
@@ -261,7 +245,6 @@ def clean_combos():
 
     log_info(f"Cleaning done – cleaned: {len(deduped)}, skipped: {len(skipped)}")
 
-    # ── Results table ─────────────────────────
     console.print()
     tbl = Table(box=box.ROUNDED, border_style="cyan dim", header_style="bold cyan",
                 title="[bold cyan]Cleaning Results[/bold cyan]", title_justify="left")
@@ -289,9 +272,6 @@ def clean_combos():
     success(f"Cleaned saved  → [bold]{out_path}[/bold]")
     success(f"Skipped saved  → [bold]{skipped_path}[/bold]")
 
-# ─────────────────────────────────────────────
-#  Feature: FTP Checker
-# ─────────────────────────────────────────────
 def ftp_checker():
     section("FTP CREDENTIAL CHECKER")
 
@@ -356,8 +336,7 @@ def ftp_checker():
         f.write('\n'.join(valid_list))
 
     log_info(f"FTP check done – valid: {len(valid_list)}/{total}")
-
-    # ── Summary ───────────────────────────────
+    
     console.print()
     rate = (len(valid_list) / total * 100) if total else 0
     stbl = Table(box=box.ROUNDED, border_style="cyan dim", header_style="bold cyan",
@@ -374,9 +353,6 @@ def ftp_checker():
     console.print()
     success(f"Results saved → [bold]{out_path}[/bold]")
 
-# ─────────────────────────────────────────────
-#  Main menu
-# ─────────────────────────────────────────────
 def main_menu():
     print_header()
 
